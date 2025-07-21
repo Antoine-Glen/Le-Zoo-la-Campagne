@@ -698,14 +698,26 @@
             return id;
         }
 
-        // Initialisation Firebase
+        // Initialisation Firebase avec timeout
         function initFirebase() {
+            // Timeout de 5 secondes pour Firebase
+            const timeoutId = setTimeout(() => {
+                console.log("Timeout Firebase - basculement en mode démo");
+                isOnline = false;
+                updateConnectionStatus();
+                document.getElementById('configWarning').style.display = 'block';
+                document.getElementById('loadingSection').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                loadDemoData();
+            }, 5000);
+
             try {
                 const firebaseConfig = getFirebaseConfig();
                 firebase.initializeApp(firebaseConfig);
                 db = firebase.firestore();
                 
                 // Test de connexion
+                clearTimeout(timeoutId);
                 isOnline = true;
                 updateConnectionStatus();
                 loadData();
@@ -715,6 +727,7 @@
                 
             } catch (error) {
                 console.error("Erreur Firebase:", error);
+                clearTimeout(timeoutId);
                 // Basculer en mode démo
                 isOnline = false;
                 updateConnectionStatus();
