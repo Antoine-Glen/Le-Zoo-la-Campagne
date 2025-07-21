@@ -666,15 +666,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-firestore-compat.min.js"></script>
 
     <script>
-        // Configuration Firebase sécurisée
+        // Configuration Firebase
         function getFirebaseConfig() {
-            // En production avec GitHub Actions, ces variables seront injectées
-            if (window.FIREBASE_CONFIG) {
-                return window.FIREBASE_CONFIG;
-            }
-            
-            // Mode développement - utiliser les clés directement
-            // Note: Ces clés peuvent être publiques car Firebase utilise des règles côté serveur
             return {
                 apiKey: "AIzaSyBY4DwO9wU33TQflhKgTO2udquUS6r_iJg",
                 authDomain: "zoo-campagne.firebaseapp.com",
@@ -790,3 +783,43 @@
                 if (userBudgets.length > 0) {
                     commonBudget = Math.min(...userBudgets);
                 }
+                
+                displaySuggestions();
+                updateTopSuggestions();
+                updateBudgetDisplay();
+                updateUserCount();
+                
+            } catch (error) {
+                console.error("Erreur lors du chargement:", error);
+                loadDemoData();
+            }
+        }
+
+        function loadDemoData() {
+            // Données de démonstration
+            suggestions = [
+                {
+                    id: '1',
+                    title: "Apéro sunset sur la terrasse",
+                    author: "Claude",
+                    category: "détente",
+                    day: "8 août",
+                    description: "Commencer les vacances en beauté avec un apéro de bienvenue au coucher du soleil. Chacun amène sa spécialité !",
+                    date: "21 juil., 14:30",
+                    score: 2,
+                    upvotes: 3,
+                    downvotes: 1,
+                    cost: null,
+                    location: null,
+                    distance: null
+                },
+                {
+                    id: '2',
+                    title: "Marché local de Guéret",
+                    author: "Claude",
+                    category: "sortie",
+                    day: "9 août",
+                    description: "Découvrir les produits locaux, rencontrer les producteurs et ramener de quoi cuisiner ensemble.",
+                    date: "21 juil., 14:31",
+                    score: 1,
+                    upvotes: 1,
