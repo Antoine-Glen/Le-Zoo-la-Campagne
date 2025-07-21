@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Zoo à la campagne - 8-14 Août</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ffa726);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .dates {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .connection-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .online { background: rgba(76, 175, 80, 0.8); }
+        .offline { background: rgba(244, 67, 54, 0.8); }
+        
+        .main-content {
+            padding: 40px;
+        }
+        
+        .budget-section {
+            background: linear-gradient(135deg, #e8f5e8, #f0f8ff);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 5px solid #4caf50;
+        }
+        
+        .budget-input {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .budget-input input {
+            width: 120px;
+        }
+        
+        .budget-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+        
+        .budget-item {
+            text-align: center;
+        }
+        
+        .budget-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .budget-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .budget-remaining {
+            color: #4caf50;
+        }
+        
+        .budget-over {
+            color: #f44336;
+        }
+        
+        .add-section {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 1.1rem;
+        }
+        
+        input, select, textarea {
+            padding: 12px 15px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            background: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .cost-input, .location-input {
+            display: none;
+            margin-top: 10px;
+        }
+        
+        .cost-input.show, .location-input.show {
+            display: block;
+        }
+        
+        .categories {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .category-filter {
+            padding: 10px 20px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .category-filter:hover, .category-filter.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: transparent;
+            transform: translateY(-2px);
+        }
+        
+        .suggestions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .suggestion-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border-left: 5px solid #667eea;
+            position: relative;
+        }
+        
+        .suggestion-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .category-tag {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .category-activité { background: #ffeb3b; color: #333; }
+        .category-restaurant { background: #ff5722; color: white; }
+        .category-sortie { background: #4caf50; color: white; }
+        .category-détente { background: #9c27b0; color: white; }
+        .category-autre { background: #607d8b; color: white; }
+        
+        .card-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .card-cost {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .card-location {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .location-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .location-link:hover {
+            text-decoration: underline;
+        }
+        
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #888;
+        }
+        
+        .author {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .date {
+            font-style: italic;
+        }
+        
+        .vote-buttons {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .vote-btn {
+            border: none;
+            background: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+        
+        .vote-btn:hover {
+            transform: scale(1.2);
+            background: rgba(0,0,0,0.05);
+        }
+        
+        .upvote-btn:hover {
+            color: #4caf50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+        
+        .downvote-btn:hover {
+            color: #f44336;
+            background: rgba(244, 67, 54, 0.1);
+        }
+        
+        .vote-btn.voted {
+            transform: scale(1.1);
+        }
+        
+        .upvote-btn.voted {
+            color: #4caf50;
+            background: rgba(76, 175, 80, 0.2);
+        }
+        
+        .downvote-btn.voted {
+            color: #f44336;
+            background: rgba(244, 67, 54, 0.2);
+        }
+        
+        .vote-score {
+            font-weight: bold;
+            font-size: 1.1rem;
+            min-width: 30px;
+            text-align: center;
+            color: #333;
+        }
+        
+        .vote-score.positive {
+            color: #4caf50;
+        }
+        
+        .vote-score.negative {
+            color: #f44336;
+        }
+        
+        .top-section {
+            background: linear-gradient(135deg, #ffd700, #ffb347);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .top-suggestions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .top-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .top-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+        }
+        
+        .rank-badge {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 0.9rem;
+        }
+        
+        .rank-1 { background: linear-gradient(135deg, #ffd700, #ffb347); }
+        .rank-2 { background: linear-gradient(135deg, #c0c0c0, #a8a8a8); }
+        .rank-3 { background: linear-gradient(135deg, #cd7f32, #b8860b); }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .user-count {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        
+        .config-warning {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .top-suggestions {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .categories {
+                justify-content: center;
+            }
+            
+            .suggestions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🦓 Le Zoo à la Campagne</h1>
+            <div class="dates">8 - 14 Août 2025</div>
+            <div class="connection-status" id="connectionStatus">🔄 Connexion...</div>
+            <div class="user-count" id="userCount">👥 Chargement...</div>
+        </header>
+        
+        <main class="main-content">
+            <div class="config-warning" id="configWarning" style="display: none;">
+                ⚠️ Configuration Firebase manquante. L'application fonctionne en mode démo.
+            </div>
+            
+            <div class="loading" id="loadingSection">
+                <h3>🔄 Synchronisation en cours...</h3>
+                <p>Connexion à la base de données partagée</p>
+            </div>
+            
+            <div id="mainApp" style="display: none;">
+                <section class="budget-section" id="budgetSection">
+                    <h2 style="text-align: center; margin-bottom: 20px; color: #333; font-size: 1.6rem;">💰 Gestion du Budget</h2>
+                    
+                    <div class="budget-input" id="budgetInput">
+                        <label for="userBudget" style="font-weight: 600;">Votre budget par personne :</label>
+                        <input type="number" id="userBudget" placeholder="ex: 150" min="0">
+                        <span>€</span>
+                        <button onclick="setBudget()" class="btn" style="padding: 10px 20px; font-size: 1rem;">Valider</button>
+                    </div>
+                    
+                    <div class="budget-display" id="budgetDisplay" style="display: none;">
+                        <div class="budget-item">
+                            <div class="budget-label">Budget commun</div>
+                            <div class="budget-value" id="commonBudget">0€</div>
+                        </div>
+                        <div class="budget-item">
+                            <div class="budget-label">Coût total activités</div>
+                            <div class="budget-value" id="totalCost">0€</div>
+                        </div>
+                        <div class="budget-item">
+                            <div class="budget-label">Reste par personne</div>
+                            <div class="budget-value budget-remaining" id="remainingBudget">0€</div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="top-section" id="topSection" style="display: none;">
+                    <h2 style="text-align: center; margin-bottom: 10px; color: #333; font-size: 1.8rem;">🏆 Top des suggestions</h2>
+                    <p style="text-align: center; color: #666; margin-bottom: 0;">Les idées les plus appréciées par le groupe</p>
+                    
+                    <div class="top-suggestions" id="topSuggestions">
+                        <!-- Top suggestions will be displayed here -->
+                    </div>
+                </section>
+                
+                <section class="add-section">
+                    <h2 style="text-align: center; margin-bottom: 30px; color: #333; font-size: 1.8rem;">✨ Ajouter une suggestion</h2>
+                    
+                    <form id="suggestionForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="title">Titre de la suggestion</label>
+                                <input type="text" id="title" required placeholder="Ex: Randonnée au lac, Restaurant La Table...">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="author">Votre prénom</label>
+                                <input type="text" id="author" required placeholder="Votre prénom">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="category">Catégorie</label>
+                                <select id="category" required>
+                                    <option value="">Choisir une catégorie</option>
+                                    <option value="activité">🚶‍♂️ Activité</option>
+                                    <option value="restaurant">🍽️ Restaurant</option>
+                                    <option value="sortie">🎯 Sortie</option>
+                                    <option value="détente">🧘‍♀️ Détente</option>
+                                    <option value="autre">💡 Autre</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="day">Jour préféré (optionnel)</label>
+                                <select id="day">
+                                    <option value="">Peu importe</option>
+                                    <option value="8 août">Vendredi 8 août</option>
+                                    <option value="9 août">Samedi 9 août</option>
+                                    <option value="10 août">Dimanche 10 août</option>
+                                    <option value="11 août">Lundi 11 août</option>
+                                    <option value="12 août">Mardi 12 août</option>
+                                    <option value="13 août">Mercredi 13 août</option>
+                                    <option value="14 août">Jeudi 14 août</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label for="description">Description</label>
+                                <textarea id="description" required placeholder="Décrivez votre idée, pourquoi ça pourrait être sympa, infos pratiques..."></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="hasCost" onchange="toggleCostInput()">
+                                    <label for="hasCost">💰 Impact Budget</label>
+                                </div>
+                                <div class="cost-input" id="costInput">
+                                    <label for="estimatedCost">Coût estimé par personne (€)</label>
+                                    <input type="number" id="estimatedCost" placeholder="ex: 25" min="0">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="hasLocation" onchange="toggleLocationInput()">
+                                    <label for="hasLocation">📍 Localisation</label>
+                                </div>
+                                <div class="location-input" id="locationInput">
+                                    <label for="address">Adresse ou lieu</label>
+                                    <input type="text" id="address" placeholder="ex: Place du marché, Guéret ou Restaurant La Table">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn" id="submitBtn" style="display: block; margin: 0 auto;">
+                            🚀 Ajouter ma suggestion
+                        </button>
+                    </form>
+                </section>
+                
+                <section class="suggestions-section">
+                    <h2 style="text-align: center; margin-bottom: 30px; color: #333; font-size: 1.8rem;">💡 Toutes les suggestions</h2>
+                    
+                    <div class="categories">
+                        <div class="category-filter active" data-category="all">Toutes</div>
+                        <div class="category-filter" data-category="activité">🚶‍♂️ Activités</div>
+                        <div class="category-filter" data-category="restaurant">🍽️ Restaurants</div>
+                        <div class="category-filter" data-category="sortie">🎯 Sorties</div>
+                        <div class="category-filter" data-category="détente">🧘‍♀️ Détente</div>
+                        <div class="category-filter" data-category="autre">💡 Autres</div>
+                    </div>
+                    
+                    <div class="suggestions-grid" id="suggestionsList">
+                        <div class="empty-state">
+                            <h3>Aucune suggestion pour le moment</h3>
+                            <p>Soyez le premier à proposer une idée pour ces vacances !</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-firestore-compat.min.js"></script>
+
+    <script>
+        // Configuration Firebase sécurisée
+        function getFirebaseConfig() {
+            // En production avec GitHub Actions, ces variables seront injectées
+            if (window.FIREBASE_CONFIG) {
+                return window.FIREBASE_CONFIG;
+            }
+            
+            // Mode développement - utiliser les clés directement
+            // Note: Ces clés peuvent être publiques car Firebase utilise des règles côté serveur
+            return {
+                apiKey: "AIzaSyBY4DwO9wU33TQflhKgTO2udquUS6r_iJg",
+                authDomain: "zoo-campagne.firebaseapp.com",
+                projectId: "zoo-campagne",
+                storageBucket: "zoo-campagne.firebasestorage.app",
+                messagingSenderId: "854923133508",
+                appId: "1:854923133508:web:de4818df7e444988533211",
+                measurementId: "G-LD9KXTZPXY"
+            };
+        }
+
+        // Variables globales
+        let db;
+        let suggestions = [];
+        let currentFilter = 'all';
+        let userVotes = {};
+        let commonBudget = 0;
+        let userBudgets = [];
+        let isOnline = false;
+        let userId = localStorage.getItem('userId') || generateUserId();
+        
+        // Localisation de la maison de campagne
+        const baseLocation = "Saint-Pierre-le-Bost, 23600, France";
+
+        function generateUserId() {
+            const id = 'user_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('userId', id);
+            return id;
+        }
+
+        // Initialisation Firebase
+        function initFirebase() {
+            try {
+                const firebaseConfig = getFirebaseConfig();
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                
+                // Test de connexion
+                isOnline = true;
+                updateConnectionStatus();
+                loadData();
+                document.getElementById('loadingSection').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                setupRealtimeListeners();
+                
+            } catch (error) {
+                console.error("Erreur Firebase:", error);
+                // Basculer en mode démo
+                isOnline = false;
+                updateConnectionStatus();
+                document.getElementById('configWarning').style.display = 'block';
+                document.getElementById('loadingSection').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                loadDemoData();
+            }
+        }
+
+        function updateConnectionStatus() {
+            const status = document.getElementById('connectionStatus');
+            if (isOnline) {
+                status.textContent = '🟢 En ligne';
+                status.className = 'connection-status online';
+            } else {
+                status.textContent = '🔴 Mode démo';
+                status.className = 'connection-status offline';
+            }
+        }
+
+        function updateUserCount() {
+            // Simulation du compteur d'utilisateurs
+            const count = Math.floor(Math.random() * 5) + 1;
+            document.getElementById('userCount').textContent = `👥 ${count} personne${count > 1 ? 's' : ''} connectée${count > 1 ? 's' : ''}`;
+        }
+
+        function setupRealtimeListeners() {
+            if (!db) return;
+            
+            // Écouter les suggestions en temps réel
+            db.collection('suggestions').onSnapshot((snapshot) => {
+                suggestions = [];
+                snapshot.forEach((doc) => {
+                    suggestions.push({ id: doc.id, ...doc.data() });
+                });
+                displaySuggestions();
+                updateTopSuggestions();
+                updateBudgetDisplay();
+            });
+
+            // Écouter les budgets
+            db.collection('budgets').onSnapshot((snapshot) => {
+                userBudgets = [];
+                snapshot.forEach((doc) => {
+                    userBudgets.push(doc.data().amount);
+                });
+                if (userBudgets.length > 0) {
+                    commonBudget = Math.min(...userBudgets);
+                    updateBudgetDisplay();
+                }
+            });
+        }
+
+        async function loadData() {
+            if (!db) return;
+            
+            try {
+                // Charger les suggestions
+                const suggestionsSnapshot = await db.collection('suggestions').get();
+                suggestions = suggestionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                // Charger les budgets
+                const budgetsSnapshot = await db.collection('budgets').get();
+                userBudgets = budgetsSnapshot.docs.map(doc => doc.data().amount);
+                if (userBudgets.length > 0) {
+                    commonBudget = Math.min(...userBudgets);
+                }
